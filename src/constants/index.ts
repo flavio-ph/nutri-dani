@@ -14,7 +14,7 @@ export const services: ServiceItem[] = [
   {
     icon: Stethoscope,
     title: "Consulta Presencial e domiciliar",
-    description: "Atendimento completo em consultório, com olhar atento à sua rotina e objetivos. Aqui, cada detalhe importa — da avaliação física ao planejamento alimentar.",
+    description: "Atendimento completo em consultório ou a domicílio, com olhar atento à sua rotina e objetivos. Aqui, cada detalhe importa — da avaliação física ao planejamento alimentar.",
     benefits: ["Avaliação corporal completa", "Plano alimentar impresso", "Ambiente acolhedor"],
     forWho: "Quem prefere contato próximo e precisa de avaliação física precisa."
   },
