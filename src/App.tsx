@@ -9,7 +9,7 @@ import { BookingProvider } from './context/BookingContext';
 import DietBuilder from './components/DietBuilder/DietBuilder';
 
 // Simple client-side routing — no extra dependency needed
-const isDietRoute = window.location.pathname === '/dieta';
+const isDietRoute = ['/dieta', '/diet'].includes(window.location.pathname);
 
 export default function App() {
   if (isDietRoute) {
