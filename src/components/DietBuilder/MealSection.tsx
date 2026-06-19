@@ -81,7 +81,7 @@ export default function MealSection({ section, onChange, onDelete }: Props) {
 
       <div className="p-5 space-y-4">
         {/* Food Table */}
-        <div className="overflow-x-auto rounded-lg border border-[#E1E8DE] dark:border-[#2A3526]">
+        <div className="overflow-visible rounded-lg border border-[#E1E8DE] dark:border-[#2A3526]">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#F4F7F2] dark:bg-[#1A221A] text-[#4A5B42] dark:text-[#A8C09A] uppercase text-xs tracking-wide">

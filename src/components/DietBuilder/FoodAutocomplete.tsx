@@ -19,9 +19,9 @@ interface Props {
 
 function MacroBadge({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <span className={`inline-flex flex-col items-center px-2 py-0.5 rounded-md text-[10px] font-semibold ${color}`}>
-      <span className="opacity-60 font-normal leading-none">{label}</span>
-      <span className="leading-none mt-0.5">{value.toFixed(1)}g</span>
+    <span className={`inline-flex flex-col items-center px-2.5 py-1 rounded-lg text-xs font-semibold ${color}`}>
+      <span className="opacity-70 font-medium leading-none mb-1">{label}</span>
+      <span className="leading-none">{value.toFixed(1)}g</span>
     </span>
   );
 }
@@ -201,7 +201,7 @@ export default function FoodAutocomplete({ item, placeholder = 'Buscar alimento�
           ref={listRef}
           id={`${uid}-listbox`}
           role="listbox"
-          className="absolute left-0 right-0 z-50 mt-1 bg-white dark:bg-[#1E211C] border border-[#E1E8DE] dark:border-[#2A3526] rounded-xl shadow-lg overflow-hidden max-h-64 overflow-y-auto"
+          className="absolute left-0 z-50 mt-1 w-full min-w-[300px] bg-white dark:bg-[#1E211C] border border-[#E1E8DE] dark:border-[#2A3526] rounded-xl shadow-lg max-h-64 overflow-y-auto"
         >
           {results.map((food, idx) => (
             <li
@@ -219,8 +219,8 @@ export default function FoodAutocomplete({ item, placeholder = 'Buscar alimento�
                   : 'text-[#2C2C2C] dark:text-[#FDFBF7] hover:bg-[#F4F7F2] dark:hover:bg-[#252B20]'
               }`}
             >
-              <span className="truncate">{food.name}</span>
-              <span className={`text-[10px] ml-2 flex-shrink-0 ${idx === activeIdx ? 'text-white/70' : 'text-[#5E7153]/60 dark:text-[#A8C09A]/60'}`}>
+              <span className="truncate pr-4">{food.name}</span>
+              <span className={`text-[10px] flex-shrink-0 ${idx === activeIdx ? 'text-white/70' : 'text-[#5E7153]/60 dark:text-[#A8C09A]/60'}`}>
                 {food.kcalPer100g.toFixed(0)} kcal/100g
               </span>
             </li>
@@ -230,7 +230,8 @@ export default function FoodAutocomplete({ item, placeholder = 'Buscar alimento�
 
       {/* ── Painel de Medida (exibido após selecionar alimento) ──────────────── */}
       {selectedFood && (
-        <div className="mt-2 flex flex-wrap items-center gap-2">
+        <div className="mt-2 flex flex-col gap-2 p-2 bg-[#F4F7F2]/50 dark:bg-[#1A221A]/50 rounded-lg border border-[#E1E8DE]/50 dark:border-[#2A3526]/50">
+          <div className="flex flex-wrap items-center gap-2">
           {/* Quantidade */}
           <div className="flex items-center gap-1">
             <label htmlFor={`${uid}-qty`} className="text-[10px] text-[#5E7153] font-semibold uppercase tracking-wide whitespace-nowrap">
@@ -269,16 +270,17 @@ export default function FoodAutocomplete({ item, placeholder = 'Buscar alimento�
 
           {/* Badges de macros calculados */}
           {nutrition && (
-            <div className="flex items-center gap-1 flex-wrap">
-              <span className="inline-flex flex-col items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
-                <span className="opacity-60 font-normal leading-none">kcal</span>
-                <span className="leading-none mt-0.5">{nutrition.calories.toFixed(0)}</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="inline-flex flex-col items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                <span className="opacity-70 font-medium leading-none mb-1">kcal</span>
+                <span className="leading-none">{nutrition.calories.toFixed(0)}</span>
               </span>
               <MacroBadge label="ptn" value={nutrition.proteins} color="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400" />
               <MacroBadge label="cho" value={nutrition.carbs}    color="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" />
               <MacroBadge label="lip" value={nutrition.lipids}   color="bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400" />
             </div>
           )}
+          </div>
         </div>
       )}
     </div>
