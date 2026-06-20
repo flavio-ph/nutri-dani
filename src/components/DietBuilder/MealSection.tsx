@@ -25,8 +25,9 @@ function sumMacros(items: DietItem[]) {
       proteins:  acc.proteins  + (it.proteins  ?? 0),
       carbs:     acc.carbs     + (it.carbs     ?? 0),
       lipids:    acc.lipids    + (it.lipids    ?? 0),
+      totalGrams: acc.totalGrams + (it.totalGrams ?? 0),
     }),
-    { calories: 0, proteins: 0, carbs: 0, lipids: 0 }
+    { calories: 0, proteins: 0, carbs: 0, lipids: 0, totalGrams: 0 }
   );
 }
 
@@ -139,8 +140,15 @@ export default function MealSection({ section, onChange, onDelete }: Props) {
             {hasAnyMacros && (
               <tfoot>
                 <tr className="border-t-2 border-[#5E7153]/30 bg-[#F4F7F2] dark:bg-[#1A221A]">
-                  <td className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-[#5E7153] font-bold">
-                    Total da refeição
+                  <td className="px-3 py-1.5">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] uppercase tracking-wider text-[#5E7153] font-bold">
+                        Total da refeição
+                      </span>
+                      <span className="text-[10px] bg-[#E1E8DE] dark:bg-[#2A3526] text-[#4A5B42] dark:text-[#A8C09A] px-2 py-0.5 rounded-md font-bold tracking-wide">
+                        {totals.totalGrams.toFixed(0)}g
+                      </span>
+                    </div>
                   </td>
                   <td className="px-2 py-1.5 text-center text-xs font-bold tabular-nums text-amber-700 dark:text-amber-400">
                     {totals.calories.toFixed(0)}

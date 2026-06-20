@@ -20,6 +20,7 @@ export interface DietItem {
   proteins?: number;
   carbs?: number;
   lipids?: number;
+  totalGrams?: number;
 }
 
 export interface MealSectionData {
