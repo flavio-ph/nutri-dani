@@ -207,8 +207,17 @@ export default function FoodAutocomplete({ item, placeholder = 'Buscar alimento�
         )}
       </div>
 
+      {/* ── Loading state dropdown ────────────────────────────────────────── */}
+      {isLoading && !open && (
+        <div className="absolute left-0 z-50 mt-1 w-full min-w-[300px] bg-white dark:bg-[#1E211C] border border-[#E1E8DE] dark:border-[#2A3526] rounded-xl shadow-lg px-4 py-3 flex items-center gap-2 text-xs text-[#5E7153]">
+          <Loader2 size={12} className="animate-spin flex-shrink-0" />
+          Buscando alimentos…
+        </div>
+      )}
+
       {/* ── Dropdown de sugestões ────────────────────────────────────────────── */}
       {open && results.length > 0 && (
+
         <ul
           ref={listRef}
           id={`${uid}-listbox`}

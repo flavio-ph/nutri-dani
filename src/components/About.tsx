@@ -51,9 +51,28 @@ export default function About() {
               </p>
             </div>
 
+            {/* Credenciais */}
+            <div className="flex flex-col gap-2 mb-6 sm:mb-8">
+              <div className="flex items-center gap-3 bg-surface border border-line rounded-xl px-4 py-2.5">
+                <span className="text-lg">🎓</span>
+                <div>
+                  <p className="text-[12px] uppercase tracking-wider text-accent font-semibold">Formação</p>
+                  <p className="text-[13px] text-text font-medium">Graduada em Nutrição</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 bg-surface border border-line rounded-xl px-4 py-2.5">
+                <span className="text-lg">📜</span>
+                <div>
+                  <p className="text-[12px] uppercase tracking-wider text-accent font-semibold">Registro Profissional</p>
+                  <p className="text-[13px] text-text font-medium">CRN-5/26511</p>
+                </div>
+              </div>
+            </div>
+
             <Button onClick={openBookingModal} variant="outline" icon={ArrowRight}>
               Quero transformar minha alimentação
             </Button>
+
           </motion.div>
         </div>
       </div>

@@ -14,13 +14,25 @@ const services = [
   { id: 'retorno', name: 'Retorno', duration: '45m' },
 ];
 
-const availableDates = Array.from({ length: 7 }).map((_, i) => {
+const availableDates = (() => {
+  const dates: Date[] = [];
   const d = new Date();
-  d.setDate(d.getDate() + i + 1);
-  return d;
-});
+  let offset = 1;
+  while (dates.length < 7) {
+    const next = new Date(d);
+    next.setDate(d.getDate() + offset);
+    const day = next.getDay(); // 0=Dom, 6=Sab
+    if (day !== 0 && day !== 6) {
+      dates.push(next);
+    }
+    offset++;
+    if (offset > 30) break; // segurança
+  }
+  return dates;
+})();
 
 const availableTimes = ['09:00', '10:30', '13:00', '14:30', '16:00', '17:30'];
+
 
 export function BookingModal({ onClose }: BookingModalProps) {
   const [step, setStep] = useState(1);

@@ -1,10 +1,23 @@
 /**
  * foodService.ts
- * Módulo de dados de alimentos baseado em tabelas-oficiais.json.
- * O JSON é carregado uma única vez (lazy) e mantido em cache em memória.
+ * Módulo de dados de alimentos baseado em tabelas-oficiais.json e tbca_completo.json.
+ * Os JSONs são carregados em paralelo uma única vez e mantidos em cache em memória.
  */
 
 import type { Food, FoodRecord, FoodMeasure, NutritionResult } from '../types/food';
+
+// ── Tipos específicos do TBCA ─────────────────────────────────────────────────
+
+interface TbcaRecord {
+  codigo: string;
+  nome: string;
+  energia_kcal: string;
+  carboidrato_total_g: string;
+  proteina_g: string;
+  lipidios_g: string;
+  fibra_alimentar_g: string;
+  [key: string]: string;
+}
 
 // ── Cache em memória ───────────────────────────────────────────────────────────
 
@@ -20,13 +33,13 @@ function normalize(str: string): string {
 }
 
 /** Converte string do JSON para número; retorna 0 para "NA", "Tr" ou vazio */
-function parseNum(val: string): number {
-  if (!val || val === 'NA' || val === 'Tr' || val === '') return 0;
-  const n = parseFloat(val.replace(',', '.'));
+function parseNum(val: string | undefined): number {
+  if (!val || val === 'NA' || val === 'Tr' || val === '' || val === '**') return 0;
+  const n = parseFloat(String(val).replace(',', '.'));
   return isNaN(n) ? 0 : n;
 }
 
-/** Processa um FoodRecord bruto em um Food normalizado por 100 g */
+/** Processa um FoodRecord da tabela oficial (por 100g referência) em um Food normalizado */
 function processRecord(raw: FoodRecord, index: number): Food | null {
   const name = raw['']?.trim();
   const refGrams = parseNum(raw['Quantidade (g)']);
@@ -49,22 +62,63 @@ function processRecord(raw: FoodRecord, index: number): Food | null {
   };
 }
 
-/** Carrega e processa o JSON; usa cache para evitar re-fetches */
+/** Processa um registro da TBCA (valores já expressos por 100g) em um Food normalizado */
+function processTbcaRecord(raw: TbcaRecord, index: number): Food | null {
+  const name = raw.nome?.trim();
+  const kcal = parseNum(raw.energia_kcal);
+
+  if (!name || kcal === 0) return null;
+
+  return {
+    id: `tbca-${index}`,
+    name,
+    referenceGrams: 100,
+    kcalPer100g: kcal,
+    proteinPer100g: parseNum(raw.proteina_g),
+    lipidsPer100g: parseNum(raw.lipidios_g),
+    carbsPer100g: parseNum(raw.carboidrato_total_g),
+    fiberPer100g: parseNum(raw.fibra_alimentar_g),
+  };
+}
+
+/** Carrega e processa ambos os JSONs em paralelo; usa cache para evitar re-fetches */
 async function loadFoods(): Promise<Food[]> {
   if (_foodCache) return _foodCache;
   if (_loadPromise) return _loadPromise;
 
-  _loadPromise = fetch('/tabelas-oficiais.json')
-    .then((r) => r.json() as Promise<FoodRecord[]>)
-    .then((records) => {
-      const foods: Food[] = [];
-      records.forEach((record, i) => {
-        const food = processRecord(record, i);
-        if (food) foods.push(food);
-      });
-      _foodCache = foods;
-      return foods;
+  _loadPromise = Promise.all([
+    fetch('/tabelas-oficiais.json')
+      .then((r) => r.json() as Promise<FoodRecord[]>)
+      .catch(() => [] as FoodRecord[]),
+    fetch('/tbca_completo.json')
+      .then((r) => r.json() as Promise<TbcaRecord[]>)
+      .catch(() => [] as TbcaRecord[]),
+  ]).then(([oficiais, tbca]) => {
+    const foods: Food[] = [];
+
+    // Tabela oficial
+    (oficiais as FoodRecord[]).forEach((record, i) => {
+      const food = processRecord(record, i);
+      if (food) foods.push(food);
     });
+
+    // TBCA — deduplicação simples: ignora se já existe nome idêntico
+    const existingNames = new Set(foods.map((f) => normalize(f.name)));
+    (tbca as TbcaRecord[]).forEach((record, i) => {
+      if (!record.nome?.trim()) return;
+      // Adiciona todos os registros da TBCA (inclusive duplicados de nome, pois são fontes distintas com variações)
+      const food = processTbcaRecord(record, i);
+      if (food && !existingNames.has(normalize(food.name))) {
+        foods.push(food);
+        existingNames.add(normalize(food.name));
+      }
+    });
+
+    // Ordena por nome
+    foods.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+    _foodCache = foods;
+    return foods;
+  });
 
   return _loadPromise;
 }

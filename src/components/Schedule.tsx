@@ -6,6 +6,12 @@ import { useBooking } from '../context/BookingContext';
 
 export default function Schedule() {
   const { openBookingModal } = useBooking();
+
+  // Dia da semana atual (0=Dom, 1=Seg, ..., 5=Sex, 6=Sab)
+  const todayName = new Date().toLocaleDateString('pt-BR', { weekday: 'long' });
+  // capitaliza primeira letra para match com constants
+  const todayNameCap = todayName.charAt(0).toUpperCase() + todayName.slice(1);
+
   return (
     <section id="schedule" className="py-16 sm:py-24 bg-background">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-12">
@@ -27,21 +33,34 @@ export default function Schedule() {
             
             <div className="bg-surface rounded-[12px] border border-line overflow-hidden text-left">
               <div className="flex flex-col">
-                {schedule.map((item, index) => (
-                  <div key={item.day} className="grid grid-cols-[80px_1fr] border-b border-line last:border-0 text-[12px]">
-                    <div className="p-4 bg-primary-light/20 font-semibold text-primary flex items-center justify-center border-r border-line/50">
-                      {item.day.substring(0, 3).toUpperCase()}
+                {schedule.map((item) => {
+                  const isToday = item.day.toLowerCase() === todayNameCap.toLowerCase();
+                  return (
+                    <div
+                      key={item.day}
+                      className={`grid grid-cols-[80px_1fr] border-b border-line last:border-0 text-[12px] transition-colors ${
+                        isToday ? 'bg-primary/5 dark:bg-primary/10' : ''
+                      }`}
+                    >
+                      <div className={`p-4 font-semibold flex items-center justify-center border-r border-line/50 ${
+                        isToday
+                          ? 'bg-primary text-white'
+                          : 'bg-primary-light/20 text-primary'
+                      }`}>
+                        {item.day.substring(0, 3).toUpperCase()}
+                        {isToday && <span className="ml-1 text-[9px] opacity-80">(hoje)</span>}
+                      </div>
+                      <div className="p-4 flex flex-wrap gap-3 items-center">
+                        <span className="bg-line/50 px-2 py-1 rounded-[4px] text-text-muted font-medium">
+                          {item.hours}
+                        </span>
+                        <span className="text-xs text-accent ml-auto font-medium">
+                          {item.type}
+                        </span>
+                      </div>
                     </div>
-                    <div className="p-4 flex flex-wrap gap-3 items-center">
-                      <span className="bg-line/50 px-2 py-1 rounded-[4px] text-text-muted font-medium">
-                        {item.hours}
-                      </span>
-                      <span className="text-xs text-accent ml-auto font-medium">
-                        {item.type}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

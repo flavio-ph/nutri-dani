@@ -54,7 +54,7 @@ export default function MealSection({ section, onChange, onDelete }: Props) {
   const hasAnyMacros = section.items.some((it) => it.calories !== undefined);
 
   return (
-    <div className="bg-white dark:bg-[#1E211C] border border-[#E1E8DE] dark:border-[#2A3526] rounded-2xl shadow-sm overflow-hidden mb-4">
+    <div>
       {/* Section Header */}
       <div className="bg-[#E1E8DE] dark:bg-[#202A1A] px-5 py-3 flex items-center justify-between gap-3">
         <div className="flex-1 flex flex-col sm:flex-row gap-2">
@@ -74,6 +74,7 @@ export default function MealSection({ section, onChange, onDelete }: Props) {
         <button
           onClick={onDelete}
           title="Remover refeição"
+          aria-label="Remover esta refeição"
           className="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0"
         >
           <Trash2 size={15} />
@@ -95,7 +96,18 @@ export default function MealSection({ section, onChange, onDelete }: Props) {
               </tr>
             </thead>
             <tbody>
-              {section.items.map((item) => (
+              {section.items.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-8 text-center">
+                    <div className="flex flex-col items-center gap-2 text-[#2C2C2C]/40 dark:text-white/30">
+                      <span className="text-2xl">🥗</span>
+                      <p className="text-xs font-medium">Nenhum alimento adicionado</p>
+                      <p className="text-[10px]">Clique em "Adicionar alimento" abaixo para começar</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                section.items.map((item) => (
                 <tr
                   key={item.id}
                   className="border-t border-[#E1E8DE] dark:border-[#2A3526] group align-top"
@@ -123,17 +135,20 @@ export default function MealSection({ section, onChange, onDelete }: Props) {
                     {item.lipids !== undefined ? item.lipids.toFixed(1) : <span className="text-[#2C2C2C]/20 dark:text-white/10">—</span>}
                   </td>
 
-                  {/* Delete button */}
+                  {/* Delete button — sempre visível (necessário para touch/mobile) */}
                   <td className="px-2 py-2">
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 rounded text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                      title="Remover alimento"
+                      aria-label="Remover este alimento"
+                      className="p-1 rounded text-[#2C2C2C]/25 hover:text-red-600 hover:bg-red-50 dark:text-white/20 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-all"
                     >
                       <Trash2 size={13} />
                     </button>
                   </td>
                 </tr>
-              ))}
+              ))
+              )}
             </tbody>
 
             {/* Totais da refeição */}
@@ -171,6 +186,7 @@ export default function MealSection({ section, onChange, onDelete }: Props) {
 
         <button
           onClick={addItem}
+          aria-label="Adicionar alimento à refeição"
           className="flex items-center gap-1.5 text-xs text-[#5E7153] hover:text-[#4A5B42] font-medium transition-colors"
         >
           <PlusCircle size={14} />

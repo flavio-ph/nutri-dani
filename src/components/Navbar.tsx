@@ -9,10 +9,18 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [isDark, setIsDark] = useState(false);
+  // Inicializa respeitando localStorage e depois a preferência do sistema
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
   const { openBookingModal } = useBooking();
 
   useEffect(() => {
+    // Sincroniza o DOM com o estado inicial
+    document.documentElement.classList.toggle('dark', isDark);
+
     if (document.documentElement.classList.contains('dark')) {
       setIsDark(true);
     }
@@ -41,13 +49,10 @@ export default function Navbar() {
   }, []);
 
   const toggleTheme = () => {
-    if (isDark) {
-      document.documentElement.classList.remove('dark');
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      setIsDark(true);
-    }
+    const next = !isDark;
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+    setIsDark(next);
   };
 
   return (
@@ -93,7 +98,7 @@ export default function Navbar() {
             <a href={contactInfo.instagram} target="_blank" rel="noreferrer" className="text-text hover:text-primary transition-colors">
               <Instagram size={18} />
             </a>
-            <button onClick={toggleTheme} className="text-text hover:text-primary transition-colors">
+            <button onClick={toggleTheme} aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'} className="text-text hover:text-primary transition-colors">
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
@@ -101,7 +106,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Toggle */}
         <div className="flex items-center gap-4 md:hidden">
-          <button onClick={toggleTheme} className="text-text hover:text-primary transition-colors">
+          <button onClick={toggleTheme} aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'} className="text-text hover:text-primary transition-colors">
             {isDark ? <Sun size={20} /> : <Moon size={20} />}
           </button>
           <button
